@@ -1,0 +1,78 @@
+# Build outputs
+bin/
+obj/
+out/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Rider / IntelliJ
+.idea/
+
+# VS Code
+.vscode/
+
+# Dotnet / NuGet
+*.nupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+*.dotCover
+
+# Publish artifacts
+publish/
+*.publishsettings
+*.deployproj
+
+# Logs and test results
+logs/
+*.log
+TestResults/
+*.trx
+coverage/
+*.coverage
+*.coveragexml
+
+# ASP.NET Core / Razor Pages
+wwwroot/lib/    # client lib restore artifacts (optional)
+# Local / secret config (do not commit secrets)
+appsettings.*.Local.json
+secrets.json
+local.settings.json
+
+# Databases
+*.mdf
+*.ldf
+*.sqlite
+*.db
+
+# User-specific files
+*.ncrunch*
+*.ncrunchproject
+*.DotSettings.user
+
+# Generated source and designer files
+*.g.cs
+*.g.i.cs
+*.Designer.cs
+
+# Certificates and credentials
+*.pfx
+*.pem
+*.key
+*.cer
+
+# Tooling / caches
+/.dotnet/
+node_modules/
+bower_components/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db

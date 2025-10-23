@@ -1,0 +1,28 @@
+﻿@model IEnumerable<HouseBuildingFinanceWebApp.Models.ApplicationUser>
+
+<h2>User List</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Full Name</th>
+            <th>Branch</th>
+            <th>Phone</th>
+            <th>Designation</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>@user.FullName</td>
+                <td>@user.Branch</td>
+                <td>@user.Phone</td>
+                <td>@user.Designation</td>
+                <td>@(user.Status ? "Active" : "Inactive")</td>
+            </tr>
+        }
+    </tbody>
+</table>

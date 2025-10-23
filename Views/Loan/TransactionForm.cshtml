@@ -1,0 +1,30 @@
+﻿@model HouseBuildingFinanceWebApp.Models.LoanGateway.LoanAccountInfo
+@{
+    ViewData["Title"] = "Enter Transaction";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<h3>Loan: @Model.LoanAC</h3>
+<p>Borrower: <strong>@Model.BorrowerName</strong> | Branch: @Model.BranchCode</p>
+
+<form method="post" asp-action="SubmitTransaction" class="w-50">
+    <input type="hidden" name="LoanAC" value="@Model.LoanAC" />
+    <input type="hidden" name="BranchCode" value="@Model.BranchCode" />
+
+    <div class="mb-3">
+        <label class="form-label">Payment Amount</label>
+        <input type="number" name="paymentAmount" step="0.01" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Payment Mode</label>
+        <input type="text" name="paymentMode" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Mobile Number</label>
+        <input type="text" name="mobileNumber" class="form-control" required />
+    </div>
+
+    <button class="btn btn-success w-50 d-block mx-auto">Submit Transaction</button>
+</form>

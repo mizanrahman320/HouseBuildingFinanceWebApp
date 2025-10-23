@@ -1,0 +1,44 @@
+﻿@model HouseBuildingFinanceWebApp.Models.LoanGateway.ApiResponse<List<HouseBuildingFinanceWebApp.Models.LoanGateway.PaymentReportItem>>
+@{
+    ViewData["Title"] = "Payment Report";
+}
+
+<h3>Payment Report</h3>
+<form method="post" class="w-50">
+    <div class="mb-3">
+        <label class="form-label">Select Date</label>
+        <input type="date" name="date" class="form-control" required />
+    </div>
+    <button class="btn btn-primary">Get Report</button>
+</form>
+
+@if (Model?.Data != null)
+{
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Txn</th>
+                <th>Loan</th>
+                <th>Branch</th>
+                <th>Amount</th>
+                <th>VAT</th>
+                <th>Mode</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Data)
+            {
+                <tr>
+                    <td>@item.TransactionId</td>
+                    <td>@item.LoanAC</td>
+                    <td>@item.BranchCode</td>
+                    <td>@item.PaymentAmount</td>
+                    <td>@item.VatAmount</td>
+                    <td>@item.PaymentMode</td>
+                    <td>@item.PaymentDate.ToString("yyyy-MM-dd")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

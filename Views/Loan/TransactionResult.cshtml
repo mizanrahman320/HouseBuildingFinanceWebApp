@@ -1,0 +1,31 @@
+﻿@model HouseBuildingFinanceWebApp.Models.LoanGateway.ApiResponse<List<HouseBuildingFinanceWebApp.Models.LoanGateway.PaymentTransaction>>
+@{
+    ViewData["Title"] = "Transaction Result";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<h3>Transaction Result</h3>
+
+@if (Model?.Data != null && Model.Data.Any())
+{
+    <div class="alert alert-success">@Model.Message</div>
+    <table class="table">
+        <thead>
+            <tr><th>Txn</th><th>LoanAC</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var t in Model.Data)
+            {
+                <tr>
+                    <td>@t.TransactionId</td>
+                    <td>@t.LoanAC</td>
+                    <td>@t.IsReceived</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-danger">No data returned or transaction failed.</div>
+}
