@@ -24,16 +24,26 @@ namespace HouseBuildingFinanceWebApp.Services
         {
             // push to external gateway
             var pushResp = await _gateway.PushDataAsync(new List<PaymentTransaction> { txn });
-            /*if (pushResp?.Data != null)
+            if (pushResp?.Data != null)
             {
                 // map remote response(s) to local records and save each
                 foreach (var remote in pushResp.Data)
                 {
-                    // remote may contain IsReceived status; create local copy using factory
-                    var local = TransactionFactory.CreateLocalFromApi(remote, authId, authBranch);
-                    await _localService.SaveTransactionAsync(local);
+                    if (remote.IsReceived == "Y")
+                    {
+
+                        // remote may contain IsReceived status; create local copy using factory
+                        var local = TransactionFactory.CreateLocalFromApi(remote, authId, authBranch);
+                        await _localService.SaveTransactionAsync(local);
+                    }
+                    else
+                    {
+                        // handle failed transaction case if needed
+                        
+                    }
+
                 }
-            }*/
+            }
 
             return pushResp;
         }

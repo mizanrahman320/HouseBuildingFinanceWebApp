@@ -1,27 +1,95 @@
 ﻿@{
     ViewData["Title"] = "Verify Loan";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    var bhbfcBranches = ViewBag.bhbfcBranches as List<HouseBuildingFinanceWebApp.Models.BHBFC_Branch>;
 }
-<h2>Loan Verification</h2>
 
-<form method="post" class="w-50">
-    <div class="mb-3">
-        <label class="form-label">Branch Code</label>
-        <input name="branchCode" class="form-control" required />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Loan Account No</label>
-        <input name="loanAC" class="form-control" required />
-    </div>
-    <button class="btn btn-primary">Verify</button>
-</form>
+<!-- Include Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="alert alert-danger mt-3">
-        @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-        {
-            <div>@err.ErrorMessage</div>
-        }
+<div class="container py-5">
+    <div class="card shadow-sm border-0 rounded-3 mx-auto" style="max-width: 600px;">
+        <div class="card-header bg-primary text-white text-center py-3 rounded-top">
+            <h4 class="mb-0">Loan Verification</h4>
+        </div>
+
+        <div class="card-body p-4">
+            <form id="verifyForm" method="post">
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Select Branch</label>
+                    <select id="branchSelect" name="branchCode" class="form-select" required>
+                        <option value="">-- Choose Branch --</option>
+                        @if (bhbfcBranches != null)
+                        {
+                            foreach (var b in bhbfcBranches)
+                            {
+                                <option value="@b.BranchCode">@b.BranchCode - @b.BranchName</option>
+                            }
+                        }
+                    </select>
+                    <small class="text-muted">Search or scroll to find the branch handling the loan.</small>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Loan Account Number</label>
+                    <input name="loanAC" class="form-control" placeholder="Enter Loan Account No" required />
+                    <small class="text-muted">Example: 202456789</small>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-search me-2"></i>Verify Loan
+                    </button>
+                </div>
+            </form>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger mt-4 mb-0">
+                    @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <div>@err.ErrorMessage</div>
+                    }
+                </div>
+            }
+        </div>
     </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-none justify-content-center align-items-center" style="z-index: 1050;">
+    <div class="text-center text-white">
+        <div class="spinner-border text-light mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+        <div>Verifying loan details...</div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Include jQuery and Select2 JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <!-- Initialize Select2 + Loading Behavior -->
+    <script>
+        $(document).ready(function () {
+            // Initialize Select2
+            $('#branchSelect').select2({
+                theme: 'bootstrap-5',
+                placeholder: '-- Choose Branch --',
+                allowClear: true,
+                width: '100%'
+            });
+
+            // Show loading overlay on form submit
+            $('#verifyForm').on('submit', function () {
+                $('#loadingOverlay').removeClass('d-none').addClass('d-flex');
+            });
+
+            // Optional safety: hide overlay if navigation fails (after 10s)
+            setTimeout(() => {
+                $('#loadingOverlay').addClass('d-none');
+            }, 10000);
+        });
+    </script>
 }

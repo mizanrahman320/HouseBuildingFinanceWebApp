@@ -106,6 +106,37 @@ namespace HouseBuildingFinanceWebApp.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("HouseBuildingFinanceWebApp.Models.BHBFC_Branch", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BranchCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("BranchName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchCode")
+                        .IsUnique();
+
+                    b.ToTable("BHBFC_Branch", (string)null);
+                });
+
             modelBuilder.Entity("HouseBuildingFinanceWebApp.Models.LoanGateway.PaymentTransaction", b =>
                 {
                     b.Property<int>("Id")
@@ -173,6 +204,37 @@ namespace HouseBuildingFinanceWebApp.Migrations
                     b.HasIndex("TransactionId", "BankId");
 
                     b.ToTable("PaymentTransactions");
+                });
+
+            modelBuilder.Entity("HouseBuildingFinanceWebApp.Models.MBLBranch", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BranchCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("BranchName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchCode")
+                        .IsUnique();
+
+                    b.ToTable("MBLBranch", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

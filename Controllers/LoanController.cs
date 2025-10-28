@@ -13,16 +13,24 @@ namespace HouseBuildingFinanceWebApp.Controllers
     {
         private readonly ILoanProcessingFacade _facade;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IBranchFacade _branchFacade;
 
-        public LoanController(ILoanProcessingFacade facade, UserManager<ApplicationUser> userManager)
+        public LoanController(ILoanProcessingFacade facade, UserManager<ApplicationUser> userManager, IBranchFacade branchFacade)
         {
             _facade = facade;
             _userManager = userManager;
+            _branchFacade = branchFacade;
         }
 
         [HttpGet]
-        public IActionResult Verify()
+        public async Task<IActionResult> Verify()
         {
+            var bhbfcBranches = await _branchFacade.GetBHBFCBranchesAsync();
+            var mblBranches = await _branchFacade.GetMBLBranchesAsync();
+
+            ViewBag.bhbfcBranches = bhbfcBranches;
+            ViewBag.mblBranches = mblBranches;
+
             return View();
         }
 

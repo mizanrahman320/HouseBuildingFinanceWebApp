@@ -41,6 +41,9 @@ builder.Services.AddScoped<ILoanGatewayProvider, LoanGatewayProvider>(sp =>
 builder.Services.AddScoped<ILocalTransactionService, LocalTransactionService>();
 // Facade
 builder.Services.AddScoped<ILoanProcessingFacade, LoanProcessingFacade>();
+builder.Services.AddScoped<IBHFCBranchService, BHBFCBranchService>();
+builder.Services.AddScoped<IMBLBranchService, MBLBranchService>();
+builder.Services.AddScoped<IBranchFacade, BranchFacade>();
 // If you used LoanGatewayProvider type injection earlier, ensure correct namespaces
 // Also register HttpClient for LoanGatewayProvider with base url (optional)
 builder.Services.AddHttpClient<LoanGatewayProvider>(client =>
