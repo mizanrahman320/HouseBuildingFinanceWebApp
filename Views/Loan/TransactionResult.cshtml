@@ -1,31 +1,69 @@
 ﻿@model HouseBuildingFinanceWebApp.Models.LoanGateway.ApiResponse<List<HouseBuildingFinanceWebApp.Models.LoanGateway.PaymentTransaction>>
+
 @{
     ViewData["Title"] = "Transaction Result";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
 
-<h3>Transaction Result</h3>
+<div class="container py-5">
+    <div class="card shadow-sm border-0 rounded-3 mx-auto" style="max-width: 800px;">
+        <div class="card-header bg-success text-white text-center py-3 rounded-top">
+            <h4 class="mb-0">Transaction Result</h4>
+        </div>
 
-@if (Model?.Data != null && Model.Data.Any())
-{
-    <div class="alert alert-success">@Model.Message</div>
-    <table class="table">
-        <thead>
-            <tr><th>Txn</th><th>LoanAC</th><th>Status</th></tr>
-        </thead>
-        <tbody>
-            @foreach (var t in Model.Data)
+        <div class="card-body p-4">
+
+            @if (Model?.Data != null && Model.Data.Any())
             {
-                <tr>
-                    <td>@t.TransactionId</td>
-                    <td>@t.LoanAC</td>
-                    <td>@t.IsReceived</td>
-                </tr>
+                <div class="alert alert-success d-flex align-items-center" role="alert">
+                    <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                    <div>@Model.Message</div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle text-center">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Loan Account</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var t in Model.Data)
+                            {
+                                var statusClass = t.IsReceived == "Y" ? "bg-success text-white" : "bg-warning text-dark";
+                                var statusText = t.IsReceived == "Y" ? "Received" : "Pending";
+
+                                <tr>
+                                    <td>@t.TransactionId</td>
+                                    <td>@t.LoanAC</td>
+                                    <td><span class="badge @statusClass px-3 py-2">@statusText</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a asp-action="Verify" asp-controller="Loan" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left"></i> Back to Loan Verification
+                    </a>
+                </div>
             }
-        </tbody>
-    </table>
-}
-else
-{
-    <div class="alert alert-danger">No data returned or transaction failed.</div>
-}
+            else
+            {
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                    <div>No data returned or transaction failed. Please try again.</div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a asp-action="Verify" asp-controller="Loan" class="btn btn-outline-danger">
+                        <i class="bi bi-arrow-left"></i> Try Again
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

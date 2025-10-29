@@ -1,25 +1,51 @@
 ﻿using HouseBuildingFinanceWebApp.Models.ViewModels;
 using HouseBuildingFinanceWebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HouseBuildingFinanceWebApp.Controllers
 {
     public class AccountController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IMBLBranchService _mblBranchService;
 
-        public AccountController(IUserService userService)
+        public AccountController(IUserService userService, IMBLBranchService mblBranchService)
         {
             _userService = userService;
+            _mblBranchService = mblBranchService;
         }
 
         [HttpGet]
-        public IActionResult Register() => View();
+        public async Task<IActionResult> Register()
+        {
+            var model = new RegisterViewModel
+            {
+                BranchList = (await _mblBranchService.GetMBLBranchesAsync())
+                    .Select(b => new SelectListItem
+                    {
+                        Value = b.BranchCode,
+                        Text = $"{b.BranchCode} - {b.BranchName}"
+                    })
+            };
+
+            return View(model);
+        }
 
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+            {
+                model.BranchList = (await _mblBranchService.GetMBLBranchesAsync())
+                    .Select(b => new SelectListItem
+                    {
+                        Value = b.BranchCode,
+                        Text = $"{b.BranchCode} - {b.BranchName}"
+                    });
+
+                return View(model);
+            }
 
             var result = await _userService.RegisterUserAsync(model);
             if (result.Succeeded)

@@ -55,40 +55,49 @@ namespace HouseBuildingFinanceWebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitTransaction(LoanAccountInfo loanModel, decimal paymentAmount, string paymentMode, string mobileNumber)
+        public async Task<IActionResult> SubmitTransaction(LoanAccountInfo loanModel, decimal paymentAmount, string purpose, string mobileNumber)
         {
-            // find current user for audit info
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = userId != null ? await _userManager.FindByIdAsync(userId) : null;
-            var authId = user?.UserName ?? "system";
-            var authBranch = user?.Branch ?? loanModel.BranchCode;
+                // find current user for audit info
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = userId != null ? await _userManager.FindByIdAsync(userId) : null;
+                var authId = user?.UserName ?? "system";
+                var authBranch = user?.Branch ?? loanModel.BranchCode;
 
-            var txn = new PaymentTransaction
-            {
-                BankId = /*HttpContext.Request.Headers["bankId"].ToString() ??*/ "MBL",
-                TransactionId = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"),
-                LoanAC = loanModel.LoanAC,
-                BranchCode = loanModel.BranchCode,
-                PaymentDate = DateTime.UtcNow,
-                Purpose = "11",
-                PaymentAmount = paymentAmount,
-                VatAmount = 0,
-                MemoNumber = DateTime.Now.ToString("yyMMdd") + new Random().Next(1000, 9999),
-                MobileNo = mobileNumber,
-                PaymentMode = paymentMode
-            };
+                // Fetch branch list and find the matching branch
+                var mblBranchList = await _branchFacade.GetMBLBranchesAsync();
+                var currentMBLBranch = mblBranchList.FirstOrDefault(b => b.BranchCode == authBranch);
 
-            var resp = await _facade.ProcessTransactionAsync(txn, authId, authBranch);
+                // Fallback if no match found
+                var branchName = currentMBLBranch?.BranchName ?? "Unknown Branch";
 
-            if (resp == null)
-            {
-                TempData["Toast"] = "Transaction failed: no response from gateway.";
+                // Build transaction object
+                var txn = new PaymentTransaction
+                {
+                    BankId = "MBL",
+                    TransactionId = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"),
+                    LoanAC = loanModel.LoanAC,
+                    BranchCode = loanModel.BranchCode,
+                    PaymentDate = DateTime.UtcNow,
+                    Purpose = purpose,
+                    PaymentAmount = paymentAmount,
+                    VatAmount = 0,
+                    MemoNumber = DateTime.Now.ToString("yyMMdd") + new Random().Next(1000, 9999),
+                    MobileNo = mobileNumber,
+                    PaymentMode = $"MBLPLC {branchName}"
+                };
+
+                var resp = await _facade.ProcessTransactionAsync(txn, authId, authBranch);
+
+                if (resp == null)
+                {
+                    TempData["Toast"] = "Transaction failed: no response from gateway.";
+                    return View("TransactionResult", resp);
+                }
+
+                TempData["Toast"] = resp.Message;
                 return View("TransactionResult", resp);
-            }
-
-            TempData["Toast"] = resp.Message;
-            return View("TransactionResult", resp);
         }
+
 
         [HttpGet]
         public IActionResult Report()

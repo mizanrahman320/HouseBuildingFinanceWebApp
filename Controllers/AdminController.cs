@@ -38,7 +38,7 @@ namespace HouseBuildingFinanceWebApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Users([FromServices] UserManager<ApplicationUser> userManager)
         {
-            var users = await userManager.GetUserAsync(User);
+            var users = userManager.Users.ToList(); // Returns all users
             return View(users);
         }
 

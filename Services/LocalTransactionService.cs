@@ -26,12 +26,27 @@ namespace HouseBuildingFinanceWebApp.Services
                 .ToListAsync();
         }
 
-        public async Task<List<PaymentTransaction>> GetTransactionsByDateAsync(DateTime date)
+        /*public async Task<List<PaymentTransaction>> GetTransactionsByDateAsync(DateTime date)
         {
             return await _db.PaymentTransactions
                 .Where(t => t.PaymentDate.Date == date.Date)
                 .OrderByDescending(t => t.PaymentDate)
                 .ToListAsync();
+        }*/
+
+        public async Task<List<PaymentTransaction>> GetTransactionsByDateAsync(DateTime startDate, DateTime endDate, string? branchCode = null)
+        {
+            var start = startDate.Date;
+            var end = endDate.Date.AddDays(1).AddTicks(-1); // include full end day
+
+            var query = _db.PaymentTransactions
+                           .Where(t => t.CreatedAt >= start && t.CreatedAt <= end);
+
+            if (!string.IsNullOrEmpty(branchCode))
+                query = query.Where(t => t.AuthBranch == branchCode);
+
+            return await query.ToListAsync();
         }
+
     }
 }

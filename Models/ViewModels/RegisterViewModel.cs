@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HouseBuildingFinanceWebApp.Models.ViewModels
 {
@@ -18,6 +19,8 @@ namespace HouseBuildingFinanceWebApp.Models.ViewModels
 
         [StringLength(100)]
         public string? Branch { get; set; }
+
+        public IEnumerable<SelectListItem>? BranchList { get; set; }
 
         [Phone]
         public string? Phone { get; set; }

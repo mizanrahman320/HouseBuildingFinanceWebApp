@@ -22,31 +22,44 @@ namespace HouseBuildingFinanceWebApp.Services
 
         public async Task<ApiResponse<List<PaymentTransaction>>?> ProcessTransactionAsync(PaymentTransaction txn, string authId, string authBranch)
         {
-            // push to external gateway
+            // Push to external gateway
             var pushResp = await _gateway.PushDataAsync(new List<PaymentTransaction> { txn });
-            if (pushResp?.Data != null)
+
+            if (pushResp?.Data == null || pushResp.Data.Count == 0)
+                return pushResp; // nothing to process, gracefully exit
+
+            // Prepare timezone (UTC+6)
+            var bdTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Dhaka");
+            var paymentDateLocal = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, bdTimeZone);
+
+            foreach (var remote in pushResp.Data)
             {
-                // map remote response(s) to local records and save each
-                foreach (var remote in pushResp.Data)
+                if (remote.IsReceived == "Y")
                 {
-                    if (remote.IsReceived == "Y")
-                    {
+                    // Keep original data consistent and apply local timestamp
+                    remote.BranchCode = txn.BranchCode;
+                    remote.PaymentDate = paymentDateLocal; // <-- UTC+6
+                    remote.Purpose = txn.Purpose;
+                    remote.PaymentAmount = txn.PaymentAmount;
+                    remote.VatAmount = txn.VatAmount;
+                    remote.MemoNumber = txn.MemoNumber;
+                    remote.MobileNo = txn.MobileNo;
+                    remote.PaymentMode = txn.PaymentMode;
 
-                        // remote may contain IsReceived status; create local copy using factory
-                        var local = TransactionFactory.CreateLocalFromApi(remote, authId, authBranch);
-                        await _localService.SaveTransactionAsync(local);
-                    }
-                    else
-                    {
-                        // handle failed transaction case if needed
-                        
-                    }
-
+                    // Create local DB copy using factory and persist
+                    var local = TransactionFactory.CreateLocalFromApi(remote, authId, authBranch);
+                    await _localService.SaveTransactionAsync(local);
+                }
+                else
+                {
+                    // Optional: handle gateway rejection / partial success cases
+                    Console.WriteLine($"Transaction not received by gateway: {txn.TransactionId}");
                 }
             }
 
             return pushResp;
         }
+
 
         public async Task<ApiResponse<List<PaymentReportItem>>?> GetReportByDateAsync(string date)
         {

@@ -6,6 +6,6 @@ namespace HouseBuildingFinanceWebApp.Services.Interfaces
     {
         Task SaveTransactionAsync(PaymentTransaction txn);
         Task<List<PaymentTransaction>> GetTransactionsAsync(int page = 1, int pageSize = 50);
-        Task<List<PaymentTransaction>> GetTransactionsByDateAsync(DateTime date);
+        Task<List<PaymentTransaction>> GetTransactionsByDateAsync(DateTime startDate, DateTime endDate, string? branchCode = null);
     }
 }
